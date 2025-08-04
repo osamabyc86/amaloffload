@@ -20,5 +20,8 @@ requests
 python-dotenv
 torch
 flask_socketio
+Flask
+flask-cors
+python-dotenv
 
 

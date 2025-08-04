@@ -16,9 +16,11 @@ PEERS = set()  # مجموعة URLs للأقران (/run)
 CENTRAL_REGISTRY_SERVERS = [
     "https://cv4790811.regru.cloud",
     "http://176.28.159.25:7520",
-    "http://44.209.54.138:7520"
+    "http://44.209.54.138:7520",
+    "http://10.229.36.125:7520"
 ]
 current_server_index = 0
+
 
 # 🟢 الحصول على IP العام أو المحلي
 def get_local_ip():

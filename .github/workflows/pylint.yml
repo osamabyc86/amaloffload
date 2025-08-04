@@ -20,4 +20,8 @@ jobs:
         pip install pylint
     - name: Analysing the code with pylint
       run: |
-pylint **/*.py || true
+
+    - name: Analysing the code with pylint
+      run: |
+      pylint --disable=R0801 **/*.py
+

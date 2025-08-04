@@ -23,5 +23,47 @@ flask_socketio
 Flask
 flask-cors
 python-dotenv
+flask==3.0.3
+flask-login==0.6.3
+flask-session
+gunicorn==21.2.0
+requests==2.31.0
+werkzeug==3.0.1
+python-dotenv==1.0.1
+openai==1.30.1
+langchain==0.1.20
+torch==2.2.0
 
+# Image and Media Processing
+Pillow==10.3.0
+opencv-python-headless
+ffmpeg-python
+pydub
+
+# Web Scraping and Automation
+beautifulsoup4==4.12.3
+playwright
+selenium
+undetected-chromedriver
+
+# PDF and Text Processing
+PyPDF2
+pytesseract
+SpeechRecognition
+
+# Messaging and Bots
+python-telegram-bot
+telegram
+
+# Task Scheduling
+schedule
+
+# Web Framework Extensions
+aiohttp
+flet
+
+# Development Tools
+replit
+paramiko
+flet
 

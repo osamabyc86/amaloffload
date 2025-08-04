@@ -1,69 +1,57 @@
-Flask
-flask_cors
-requests
-psutil
-zeroconf
-cryptography
-numpy
-networkx
-Flask
-flask_cors
-requests
-psutil
-zeroconf
-cryptography
-numpy
-networkx
-flask
-GPUtil
-requests
-python-dotenv
-torch
-flask_socketio
-Flask
-flask-cors
-python-dotenv
-flask==3.0.3
+# Web Framework
+Flask==3.0.3
+flask-cors==4.0.1
 flask-login==0.6.3
-flask-session
-gunicorn==21.2.0
-requests==2.31.0
+flask-session==0.8.0
+flask-socketio==5.5.1
 werkzeug==3.0.1
+gunicorn==21.2.0
+
+# Environment & Config
 python-dotenv==1.0.1
+
+# Networking & System
+requests==2.31.0
+psutil==7.0.0
+zeroconf==0.147.0
+cryptography==45.0.0
+networkx==3.5
+GPUtil==1.4.0
+aiohttp==3.9.5
+paramiko==3.4.0
+
+# AI & ML
+torch==2.2.0
 openai==1.30.1
 langchain==0.1.20
-torch==2.2.0
+numpy==2.3.2
 
 # Image and Media Processing
 Pillow==10.3.0
-opencv-python-headless
-ffmpeg-python
-pydub
+opencv-python-headless==4.10.0.84
+ffmpeg-python==0.2.0
+pydub==0.25.1
 
 # Web Scraping and Automation
 beautifulsoup4==4.12.3
-playwright
-selenium
-undetected-chromedriver
+playwright==1.45.0
+selenium==4.22.0
+undetected-chromedriver==3.5.5
 
 # PDF and Text Processing
-PyPDF2
-pytesseract
-SpeechRecognition
+PyPDF2==3.0.1
+pytesseract==0.3.10
+SpeechRecognition==3.10.0
 
 # Messaging and Bots
-python-telegram-bot
-telegram
+python-telegram-bot==20.7
+telegram==0.0.1
 
 # Task Scheduling
-schedule
+schedule==1.2.0
 
-# Web Framework Extensions
-aiohttp
-flet
+# UI Framework
+flet==0.21.0
 
-# Development Tools
-replit
-paramiko
-flet
-
+# Dev Tools
+replit==3.6.0

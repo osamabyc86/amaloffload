@@ -51,7 +51,7 @@ telegram==0.0.1
 schedule==1.2.0
 
 # UI Framework
-flet==0.21.0
+flet==0.27.6
 
 # Dev Tools
 replit==3.6.0

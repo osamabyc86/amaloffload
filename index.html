@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>نظام توزيع المهام الذكي</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+        }
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+        li {
+            background: white;
+            margin: 10px 0;
+            padding: 15px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        button {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #2980b9;
+        }
+        #result {
+            background: white;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>🚀 نظام توزيع المهام الذكي</h1>
+    <ul id="tasks">
+        {% for task_id, task in tasks.items() %}
+        <li>
+            <span>{{ task[0] }}</span>
+            <button onclick="runTask('{{ task_id }}')">تشغيل</button>
+        </li>
+        {% endfor %}
+    </ul>
+
+    <div id="result" style="display: {% if result %}block{% else %}none{% endif %};">
+        <h2>✅ النتيجة:</h2>
+        <pre>{{ result }}</pre>
+    </div>
+
+    <script>
+        async function runTask(taskId) {
+            const response = await fetch("/run_task", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded",
+                },
+                body: `task_id=${taskId}`
+            });
+            const data = await response.text();
+            
+            // تحديث الصفحة دون إعادة تحميل كاملة
+            document.getElementById("result").innerHTML = 
+                `<h2>✅ النتيجة:</h2><pre>${JSON.parse(data).result}</pre>`;
+            document.getElementById("result").style.display = "block";
+        }
+    </script>
+</body>
+</html>

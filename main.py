@@ -73,6 +73,7 @@ except ImportError as e:
 # ─────────────── ثابتات التهيئة ───────────────
 if os.getenv("RENDER", "false") != "true":
     subprocess.Popen([PYTHON_EXE, "peer_server.py", "--port", str(CPU_PORT)])
+CPU_PORT = int(os.getenv("PORT", "7520"))
 
 SHARED_SECRET = os.getenv("SHARED_SECRET", "my_shared_secret_123")
 PYTHON_EXE = sys.executable

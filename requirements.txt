@@ -27,7 +27,7 @@ langchain==0.1.20
 numpy==2.3.2
 
 # Image and Media Processing
-Pillow==10.3.0
+Pillow==11.0.0
 opencv-python-headless==4.10.0.84
 ffmpeg-python==0.2.0
 pydub==0.25.1

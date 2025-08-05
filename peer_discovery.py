@@ -14,10 +14,13 @@ PEERS = set()  # مجموعة URLs للأقران (/run)
 
 # 🌐 قائمة السيرفرات (Failover List)
 CENTRAL_REGISTRY_SERVERS = [
-    "https://cv4790811.regru.cloud",
-    "https://amaloffload.onrender.com",
-    "http://44.209.54.138:7520",
-    "http://10.229.36.125:7520"
+    "https://176.28.159.25:7520",
+    "https://176.28.159.25:7521",
+    "https://cv4790811.regru.cloud:7520",
+    "https://amaloffload.onrender.com:8000",
+    "https://osamabyc86-offload.hf.space:7520",
+    "http://10.229.36.125:7520",
+    "http://10.229.228.178:7520"
 ]
 current_server_index = 0
 

@@ -71,10 +71,7 @@ except ImportError as e:
     sys.exit(1)
 
 # ─────────────── ثابتات التهيئة ───────────────
-if os.getenv("RENDER", "false") != "true":
-    subprocess.Popen([PYTHON_EXE, "peer_server.py", "--port", str(CPU_PORT)])
-CPU_PORT = int(os.getenv("PORT", "7520"))
-
+CPU_PORT = int(os.getenv("CPU_PORT", "7520"))
 SHARED_SECRET = os.getenv("SHARED_SECRET", "my_shared_secret_123")
 PYTHON_EXE = sys.executable
 
@@ -198,6 +195,33 @@ def menu(executor: DistributedExecutor):
                 print(f"✅ النتيجة: {res}\n⏱️ الوقت: {dur:.3f} ث")
         except Exception as exc:
             print(f"❌ خطأ في تنفيذ المهمة: {exc}")
+def start_ram_manager(
+        ram_limit_mb: int = 2048,
+        chunk_mb: int = 64,
+        interval: int = 5,
+        port: int = 8765
+    ):
+    """
+    شغّل ram_manager كخيط داخل المشروع.
+
+    :param ram_limit_mb:  الحد الأدنى للرام الحرّة قبل الترحيل
+    :param chunk_mb:      حجم الكتلة المنقولة بالميغابايت
+    :param interval:      زمن الانتظار بين كل فحص (ثانية)
+    :param port:          البورت الذي يستمع عليه واجهة Flask
+    """
+    # ضبط المتغيّرات البيئيّة بحيث يقرأها ram_manager.py
+    import os
+    os.environ["RAM_THRESHOLD_MB"]   = str(ram_limit_mb)
+    os.environ["RAM_CHUNK_MB"]       = str(chunk_mb)
+    os.environ["RAM_CHECK_INTERVAL"] = str(interval)
+    os.environ["RAM_PORT"]           = str(port)
+
+    # استيراد الملف (يُنفَّذ كـموديول) مرة واحدة
+    ram_manager = importlib.import_module("ram_manager")
+
+    # تشغيله في خيط منفصل حتى لا يحجب main loop
+    threading.Thread(target=ram_manager.main, daemon=True).start()
+    print(f"[MAIN] ram_manager شغَّال على البورت {port}")
 
 # ─────────────── الدالة الرئيسية ───────────────
 def main():
@@ -271,117 +295,3 @@ if __name__ == "__main__":
         logging.info("🛈 your_control غير متوفّر – تشغيل افتراضي")
 
     main()
-  import os
-import json
-import torch
-import subprocess
-from transformers import AutoTokenizer, AutoModelForCausalLM
-from responses import generate_reply
-
-# إعداد نموذج TinyLlama
-tokenizer = AutoTokenizer.from_pretrained("TinyLlama/TinyLlama-1.1B-Chat-v1.0")
-model = AutoModelForCausalLM.from_pretrained(
-    "TinyLlama/TinyLlama-1.1B-Chat-v1.0",
-    torch_dtype=torch.float16,
-    device_map="auto"
-)
-
-# تحميل سجل المحادثة
-history_path = "history.json"
-
-if os.path.exists(history_path):
-    with open(history_path, "r", encoding="utf-8") as f:
-        chat_history = json.load(f)
-else:
-    chat_history = []
-
-# تنسيق المحادثة للنموذج
-def format_chat(history):
-    messages = [
-        {"role": "system", "content": "أنت المساعدة نورا. تحدثي بلغة عربية فصحى بسيطة."}
-    ]
-    messages.extend(history)
-    return tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
-
-# توليد الرد باستخدام TinyLlama
-def generate_llama_response(prompt, max_new_tokens=500):
-    inputs = tokenizer(prompt, return_tensors="pt").to(model.device)
-    outputs = model.generate(
-        **inputs,
-        max_new_tokens=max_new_tokens,
-        temperature=0.7,
-        do_sample=True
-    )
-    return tokenizer.decode(outputs[0], skip_special_tokens=True)
-
-# البحث عن خوادم (محاكاة)
-def simulate_server_scan():
-    print("نورا: أبحث عن خوادم...")
-    fake_servers = ["192.168.1.5", "192.168.1.10", "192.168.1.20"]
-    for server in fake_servers:
-        print(f"نورا: تم العثور على خادم مفتوح في {server}")
-
-# بدء المحادثة
-def chat():
-    global chat_history
-
-    print("""
-    نظام نورا الذكي (الإصدار TinyLlama)
-    أوامر خاصة:
-    - scan: مسح الشبكة (محاكاة)
-    - خروج/exit/quit: إنهاء المحادثة
-    """)
-
-    while True:
-        try:
-            user_input = input("أنت: ").strip()
-            if not user_input:
-                continue
-
-            if user_input.lower() in ["خروج", "exit", "quit"]:
-                break
-                
-            if user_input.lower() == "scan":
-                simulate_server_scan()
-                continue
-
-            # أولاً: حاول استخدام الرد الذكي من responses.py
-            custom_reply = generate_reply(user_input, username="أسامة")
-            if custom_reply:
-                print("نورا:", custom_reply)
-                chat_history.append({"role": "user", "content": user_input})
-                chat_history.append({"role": "assistant", "content": custom_reply})
-                continue
-
-            # إذا لم يوجد رد ذكي، استخدم TinyLlama
-            chat_history.append({"role": "user", "content": user_input})
-            prompt = format_chat(chat_history)
-            
-            print("نورا: أفكر...")
-            response = generate_llama_response(prompt)
-            
-            # استخراج آخر رسالة من الرد (لأن النموذج يعيد التاريخ كاملاً)
-            assistant_response = response.split("assistant\n")[-1].strip()
-            print("نورا:", assistant_response)
-            
-            chat_history.append({"role": "assistant", "content": assistant_response})
-
-            # حفظ السجل كل 3 رسائل لتجنب الكتابة المستمرة
-            if len(chat_history) % 3 == 0:
-                with open(history_path, "w", encoding="utf-8") as f:
-                    json.dump(chat_history, f, ensure_ascii=False, indent=2)
-
-        except KeyboardInterrupt:
-            print("\nنورا: تم إنهاء المحادثة.")
-            break
-        except Exception as e:
-            print(f"نورا: حدث خطأ: {str(e)}")
-            continue
-
-    # حفظ السجل النهائي عند الخروج
-    with open(history_path, "w", encoding="utf-8") as f:
-        json.dump(chat_history, f, ensure_ascii=False, indent=2)
-
-if __name__ == "__main__":
-    chat()
-

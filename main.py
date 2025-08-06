@@ -25,8 +25,20 @@ def start_external_server():
         subprocess.Popen([sys.executable, os.path.join(os.getcwd(), "external_server.py")])
     except Exception as e:
         logging.error(f"❌ خطأ في تشغيل external_server.py: {e}")
+import socket
 
-# ─────────────── ضبط المسارات ───────────────
+def get_free_port(start_port=7520, max_port=7600):
+    port = start_port
+    while port <= max_port:
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+            try:
+                s.bind(("0.0.0.0", port))
+                return port  # هذا البورت متاح
+            except OSError:
+                port += 1
+    raise RuntimeError("🚫 لا يوجد بورت متاح في النطاق المحدد.")
+
+# ─
 FILE = Path(__file__).resolve()
 BASE_DIR = FILE.parent
 PROJECT_ROOT = BASE_DIR.parent
@@ -71,7 +83,7 @@ except ImportError as e:
     sys.exit(1)
 
 # ─────────────── ثابتات التهيئة ───────────────
-CPU_PORT = int(os.getenv("CPU_PORT", "7521"))
+CPU_PORT = 7521
 SHARED_SECRET = os.getenv("SHARED_SECRET", "my_shared_secret_123")
 PYTHON_EXE = sys.executable
 
@@ -121,7 +133,7 @@ def run_task():
 def start_flask_server():
     ip_public = os.getenv("PUBLIC_IP", "127.0.0.1")
     logging.info(f"🌐 Flask متوفر على: http://{ip_public}:{CPU_PORT}/run_task")
-    flask_app.run(host="0.0.0.0", port=CPU_PORT, debug=False)
+    flask_app.run(host="0.0.0.0", port=7521, debug=False)
 
 # ─────────────── خدمات خلفية محلية ───────────────
 def start_services():

@@ -71,7 +71,7 @@ except ImportError as e:
     sys.exit(1)
 
 # ─────────────── ثابتات التهيئة ───────────────
-CPU_PORT = int(os.getenv("CPU_PORT", "7520"))
+CPU_PORT = int(os.getenv("CPU_PORT", "7521"))
 SHARED_SECRET = os.getenv("SHARED_SECRET", "my_shared_secret_123")
 PYTHON_EXE = sys.executable
 

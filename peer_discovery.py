@@ -7,7 +7,7 @@ import logging
 import requests
 from zeroconf import Zeroconf, ServiceInfo, ServiceBrowser
 import random
-rport = {"7520", "7384" ,"9021" ,"6998" ,"5810" ,"9274" ,"8645" ,"7329" ,"7734" ,"8456" ,"6173" ,"7000" , "8000" }
+rport = {"7520", "7384" ,"9021" ,"6998" ,"5810" ,"9274" ,"8645" ,"7329" ,"7734" ,"8456" ,"6173","7860" }
 # 👇 إعداد الـ peer discovery عبر LAN وInternet
 SERVICE = "_tasknode._tcp.local."
 PORT = int(os.getenv("CPU_PORT", random.choice(list(rport))))
@@ -135,6 +135,32 @@ def fetch_central_loop():
         except Exception as e:
             print(f"⚠️ Fetch central peers failed on {server}: {e}")
         time.sleep(300)
+def connect_until_success():
+    """
+    يحاول الاتصال بكل سيرفر في CENTRAL_REGISTRY_SERVERS
+    على كل منفذ في RPORTS بالتتابع (مع تأخير بسيط).
+    لا يخرج إلا بعد نجاح التسجيل، ويُعيد السيرفر المختار وقائمة الأقران.
+    """
+    global PORT, current_server_index
+    while True:
+        for port in RPORTS:                          # جرّب كل المنافذ
+            for idx, server in enumerate(CENTRAL_REGISTRY_SERVERS):
+                info = {
+                    "node_id": os.getenv("NODE_ID", socket.gethostname()),
+                    "ip": get_local_ip(),
+                    "port": port
+                }
+                try:
+                    resp = requests.post(f"{server}/register",
+                                          json=info, timeout=5)
+                    resp.raise_for_status()          # نجاح
+                    PORT = port                      # ثبّت المنفذ الناجح
+                    current_server_index = idx       # حدّث المؤشّر
+                    print(f"✅ Connected: {server} on port {PORT}")
+                    return server, resp.json()       # peers_list
+                except Exception as e:
+                    logging.info("❌ %s:%s -> %s", server, port, e)
+        time.sleep(5)  # انتظر قليلاً ثم أَعِد الكرّة
 
 # 🚀 Main
 def main():

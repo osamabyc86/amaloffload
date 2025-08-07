@@ -25,20 +25,8 @@ def start_external_server():
         subprocess.Popen([sys.executable, os.path.join(os.getcwd(), "external_server.py")])
     except Exception as e:
         logging.error(f"❌ خطأ في تشغيل external_server.py: {e}")
-import socket
 
-def get_free_port(start_port=7520, max_port=7600):
-    port = start_port
-    while port <= max_port:
-        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-            try:
-                s.bind(("0.0.0.0", port))
-                return port  # هذا البورت متاح
-            except OSError:
-                port += 1
-    raise RuntimeError("🚫 لا يوجد بورت متاح في النطاق المحدد.")
-
-# ─
+# ─────────────── ضبط المسارات ───────────────
 FILE = Path(__file__).resolve()
 BASE_DIR = FILE.parent
 PROJECT_ROOT = BASE_DIR.parent
@@ -83,7 +71,7 @@ except ImportError as e:
     sys.exit(1)
 
 # ─────────────── ثابتات التهيئة ───────────────
-CPU_PORT = 7521
+CPU_PORT = int(os.getenv("CPU_PORT", "7520"))
 SHARED_SECRET = os.getenv("SHARED_SECRET", "my_shared_secret_123")
 PYTHON_EXE = sys.executable
 
@@ -133,7 +121,7 @@ def run_task():
 def start_flask_server():
     ip_public = os.getenv("PUBLIC_IP", "127.0.0.1")
     logging.info(f"🌐 Flask متوفر على: http://{ip_public}:{CPU_PORT}/run_task")
-    flask_app.run(host="0.0.0.0", port=7521, debug=False)
+    flask_app.run(host="0.0.0.0", port=CPU_PORT, debug=False)
 
 # ─────────────── خدمات خلفية محلية ───────────────
 def start_services():
@@ -234,6 +222,56 @@ def start_ram_manager(
     # تشغيله في خيط منفصل حتى لا يحجب main loop
     threading.Thread(target=ram_manager.main, daemon=True).start()
     print(f"[MAIN] ram_manager شغَّال على البورت {port}")
+# --- أضِف الدالة الجديدة في أي مكان قبل main() -----------------
+def connect_until_success():
+    """
+    يدور على كل CENTRAL_REGISTRY_SERVERS وكل منفذ في RPORTS
+    حتى ينجح التسجيل، ثم يُعيد السيرفر والقائمة الأولية للأقران.
+    """
+    global PORT, current_server_index
+    while True:
+        for port in RPORTS:                         # جرّب كل المنافذ
+            for idx, server in enumerate(CENTRAL_REGISTRY_SERVERS):
+                info = {
+                    "node_id": os.getenv("NODE_ID", socket.gethostname()),
+                    "ip": get_local_ip(),
+                    "port": port
+                }
+                try:
+                    resp = requests.post(f"{server}/register",
+                                          json=info, timeout=5)
+                    resp.raise_for_status()         # نجاح
+                    PORT = port                     # ثبّت المنفذ النهائي
+                    current_server_index = idx
+                    print(f"✅ Connected: {server} on port {PORT}")
+                    return server, resp.json()      # peers_list
+                except Exception:
+                    pass
+        time.sleep(5)  # أعد المحاولة بعد 5 ثوانٍ
+# ----------------------------------------------------------------
+
+def main():
+    logging.basicConfig(level=logging.INFO)
+    print("🚀 Peer Discovery System starting...")
+
+    # خيوط اكتشاف/تسجيل LAN
+    threading.Thread(target=register_service_lan, daemon=True).start()
+    threading.Thread(target=discover_lan_loop, daemon=True).start()
+
+    # ⬇️  بدّل register_with_central() بهذا المقطع
+    server, peers = connect_until_success()     # لا يخرج إلا عند النجاح
+    for p in peers:                             # أضف الأقران الأوليّين
+        peer_url = f"http://{p['ip']}:{p['port']}/run"
+        PEERS.add(peer_url)
+
+    # استمرّ في مزامنة السّيرفر المركزي
+    threading.Thread(target=fetch_central_loop, daemon=True).start()
+
+    try:
+        while True:
+            time.sleep(60)
+    except KeyboardInterrupt:
+        print("🛑 Exiting...")
 
 # ─────────────── الدالة الرئيسية ───────────────
 def main():

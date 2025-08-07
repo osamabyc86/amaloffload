@@ -7,7 +7,13 @@ import logging
 import requests
 from zeroconf import Zeroconf, ServiceInfo, ServiceBrowser
 import random
-rport = {"7520", "7384" ,"9021" ,"6998" ,"5810" ,"9274" ,"8645" ,"7329" ,"7734" ,"8456" ,"6173","7860" ,"8000" }
+
+# منفذ عشوائي مكوَّن من 4 أرقام (مثلاً 0007، 8321…)
+PORT = int(os.getenv("CPU_PORT", random.randint(1, 9999)))
+
+# إذا كان باقي الكود يحتاج متغيّر rport iterable
+# أنشئ مجموعة تحتوي هذا المنفذ فقط (اختياري):
+rport = {f"{PORT:04}"}
 # 👇 إعداد الـ peer discovery عبر LAN وInternet
 SERVICE = "_tasknode._tcp.local."
 PORT = int(os.getenv("CPU_PORT", random.choice(list(rport))))

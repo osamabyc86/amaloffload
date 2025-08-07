@@ -7,7 +7,7 @@ import logging
 import requests
 from zeroconf import Zeroconf, ServiceInfo, ServiceBrowser
 import random
-rport = {"7520", "7384" ,"9021" ,"6998" ,"5810" ,"9274" ,"8645" ,"7329" ,"7734" ,"8456" ,"6173" ,"7000" }
+rport = {"7520", "7384" ,"9021" ,"6998" ,"5810" ,"9274" ,"8645" ,"7329" ,"7734" ,"8456" ,"6173" ,"7000" , "8000" }
 # 👇 إعداد الـ peer discovery عبر LAN وInternet
 SERVICE = "_tasknode._tcp.local."
 PORT = int(os.getenv("CPU_PORT", random.choice(list(rport))))

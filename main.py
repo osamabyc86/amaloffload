@@ -17,7 +17,25 @@ from typing import Any
 
 from flask import Flask, request, jsonify
 from flask_cors import CORS
+# ... (بقية الاستيرادات)
 
+def main():
+    # 1. تحميل وتشغيل peer_discovery.py أولاً
+    peer_module = load_and_run_peer_discovery()
+    
+    if peer_module is None:
+        print("⚠️ سيستمر التشغيل بدون peer_discovery.py")
+    else:
+        # يمكنك الوصول إلى متغيرات ووظائف peer_discovery.py هنا
+        if hasattr(peer_module, 'CENTRAL_REGISTRY_SERVERS'):
+            print("السيرفرات المركزية:", peer_module.CENTRAL_REGISTRY_SERVERS)
+    
+    # 2. متابعة تنفيذ باقي الوظائف
+    print("🚀 بدء تشغيل التطبيق الرئيسي...")
+    # ... باقي الكود
+
+if __name__ == "__main__":
+    main()
 
 # أو مباشرة:
 # from peer_discovery import PORT as CPU_PORT
@@ -180,7 +198,70 @@ def auto_monitor(auto_executor):
         except Exception as e:
             logging.error(f"خطأ في المراقبة التلقائية: {e}")
             time.sleep(5)
+import importlib.util
+import sys
+from pathlib import Path
+import time
+import requests
 
+def load_and_connect_to_central_server(max_attempts=10, retry_delay=5):
+    """
+    دالة محسنة لتحميل peer_discovery.py والمحاولة للاتصال بالسيرفر المركزي
+    حتى تنجح أو تصل إلى الحد الأقصى للمحاولات
+    
+    Args:
+        max_attempts (int): الحد الأقصى لعدد المحاولات (0 للمحاولة إلى ما لا نهاية)
+        retry_delay (int): الوقت بين المحاولات بالثواني
+    """
+    # 1. تحميل ملف peer_discovery.py أولاً
+    try:
+        peer_discovery_path = Path(__file__).parent / "peer_discovery.py"
+        
+        if not peer_discovery_path.exists():
+            raise FileNotFoundError(f"ملف peer_discovery.py غير موجود في {peer_discovery_path.parent}")
+        
+        spec = importlib.util.spec_from_file_location("peer_discovery_module", peer_discovery_path)
+        peer_module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(peer_module)
+        
+        print("✅ تم تحميل peer_discovery.py بنجاح")
+    except Exception as e:
+        print(f"❌ خطأ في تحميل peer_discovery.py: {str(e)}")
+        return None
+
+    # 2. المحاولة للاتصال بالسيرفر المركزي
+    attempt = 0
+    while True:
+        attempt += 1
+        try:
+            if not hasattr(peer_module, 'CENTRAL_REGISTRY_SERVERS'):
+                raise AttributeError("لا يوجد تعريف للسيرفرات المركزية في peer_discovery.py")
+            
+            servers = peer_module.CENTRAL_REGISTRY_SERVERS
+            if not servers:
+                raise ValueError("قائمة السيرفرات المركزية فارغة")
+            
+            # اختيار سيرفر عشوائي للمحاولة
+            selected_server = random.choice(servers)
+            
+            print(f"🔌 محاولة الاتصال بالسيرفر المركزي ({attempt}): {selected_server}")
+            
+            # مثال على طلب اتصال (يمكن تعديله حسب حاجتك)
+            response = requests.get(f"{selected_server}/ping", timeout=5)
+            response.raise_for_status()
+            
+            print(f"✅ تم الاتصال بنجاح بالسيرفر: {selected_server}")
+            return peer_module
+            
+        except Exception as e:
+            print(f"❌ فشل الاتصال: {str(e)}")
+            
+            if max_attempts > 0 and attempt >= max_attempts:
+                print(f"⚠️ تم الوصول للحد الأقصى للمحاولات ({max_attempts})")
+                return None
+                
+            print(f"↻ إعادة المحاولة بعد {retry_delay} ثواني...")
+            time.sleep(retry_delay)
 # ─────────────── القائمة التفاعلية CLI ───────────────
 def menu(executor: DistributedExecutor):
     tasks = {

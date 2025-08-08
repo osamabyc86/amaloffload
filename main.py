@@ -18,7 +18,29 @@ from typing import Any
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 
+
+# أو مباشرة:
+# from peer_discovery import PORT as CPU_PORT
+
 # تشغيل external_server.py تلقائيًا
+import threading
+
+def _start_peer_discovery():
+    """
+    يستورد الموديول ويشغله.
+    إذا كان لديكم دالة معيّنة (مثلاً peer_discovery.main())
+    استدعِها داخل هذا الهدف بدل الاعتماد على كود ‎if __name__ == '__main__'‎.
+    """
+    import peer_discovery          # تشغيل الموديول؛ معظم الأكواد تبدأ حلقة الخدمة عند الاستيراد
+    # أو مثلاً:
+    # peer_discovery.main()
+from peer_discovery import PORT, PORT
+import peer_discovery        # يختار المنفذ ويضبطه مرّة واحدة
+CPU_PORT = peer_discovery.PORT
+
+# -- daemon=True يجعل الثريد يُغلق تلقائياً مع إيقاف البرنامج الرئيسي.
+threading.Thread(target=_start_peer_discovery, daemon=True).start()
+
 def start_external_server():
     try:
         logging.info("🚀 تشغيل external_server.py تلقائيًا...")
@@ -71,7 +93,7 @@ except ImportError as e:
     sys.exit(1)
 
 # ─────────────── ثابتات التهيئة ───────────────
-CPU_PORT = int(os.getenv("CPU_PORT", "7520"))
+CPU_PORT = int(os.getenv("CPU_PORT" ,"5297"))
 SHARED_SECRET = os.getenv("SHARED_SECRET", "my_shared_secret_123")
 PYTHON_EXE = sys.executable
 
@@ -225,12 +247,12 @@ def start_ram_manager(
 # --- أضِف الدالة الجديدة في أي مكان قبل main() -----------------
 def connect_until_success():
     """
-    يدور على كل CENTRAL_REGISTRY_SERVERS وكل منفذ في RPORTS
+    يدور على كل CENTRAL_REGISTRY_SERVERS وكل منفذ في PORTS
     حتى ينجح التسجيل، ثم يُعيد السيرفر والقائمة الأولية للأقران.
     """
     global PORT, current_server_index
     while True:
-        for port in RPORTS:                         # جرّب كل المنافذ
+        for port in PORTS:                         # جرّب كل المنافذ
             for idx, server in enumerate(CENTRAL_REGISTRY_SERVERS):
                 info = {
                     "node_id": os.getenv("NODE_ID", socket.gethostname()),

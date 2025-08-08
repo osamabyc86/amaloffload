@@ -6,6 +6,7 @@ import GPUtil
 from flask import Flask, render_template
 from flask_socketio import SocketIO, emit
 from peer_discovery import PEERS
+from peer_discovery import PORT, PORT
 
 logging.basicConfig(level=logging.INFO)
 

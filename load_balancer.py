@@ -1,5 +1,6 @@
 # load_balancer.py
 import peer_discovery, requests, time, smart_tasks, psutil, socket
+from peer_discovery import PORT, PORT
 
 def send(peer, func, *args, **kw):
     try:

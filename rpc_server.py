@@ -9,6 +9,7 @@ from flask import Flask, request, jsonify
 import smart_tasks  # «your_tasks» تمّ استيراده تحت هذا الاسم فى main.py
 import logging, json
 from security_layer import SecurityManager
+from peer_discovery import PORT, PORT
 
 SECURITY = SecurityManager("my_shared_secret_123")
 
@@ -69,5 +70,5 @@ def run():
 
 # ------------------------------------------------------------------
 if name == "main":
-    # تأكد أن المنفذ 7520 مفتوح
-    app.run(host="0.0.0.0", port=7520)
+    # تأكد أن المنفذ PORT مفتوح
+    app.run(host="0.0.0.0", port=PORT)

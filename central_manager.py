@@ -8,6 +8,7 @@ from typing import Dict, List
 import requests
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
+from peer_discovery import PORT, PORT
 
 # ---- إعداد FastAPI ----------------------------------------------------------
 app = FastAPI(title="Central Task Manager")
@@ -16,7 +17,7 @@ app = FastAPI(title="Central Task Manager")
 
 class RegisterRequest(BaseModel):
     """تسجيل أو تجديد ظهور العقدة."""
-    url: str          # مثلاً: "http://203.0.113.45:7520/run"
+    url: str          # مثلاً: "http://203.0.113.45:PORT/run"
     load: float = 0.0 # نسبة تحميل العقدة (0.0 - 1.0)، اختياري
 
 class TaskRequest(BaseModel):

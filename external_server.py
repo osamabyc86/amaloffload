@@ -8,6 +8,7 @@ from flask import Flask, request, jsonify, render_template
 from flask_cors import CORS
 from flask_socketio import SocketIO, emit
 from peer_discovery import PEERS
+from peer_discovery import PORT, PORT
 
 logging.basicConfig(level=logging.INFO)
 
@@ -94,6 +95,4 @@ def handle_message(data):
 # ─────────────── تشغيل السيرفر ───────────────
 if __name__ == "__main__":
     logging.info("🚀 بدء السيرفر المركزي مع Dashboard ودردشة")
-    socketio.run(app, host="0.0.0.0", port=8000, allow_unsafe_werkzeug=True)
-
-
+    socketio.run(app, host="0.0.0.0", port =5005)

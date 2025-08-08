@@ -2,6 +2,7 @@
 from typing import Dict, Any, List
 import networkx as nx
 import hashlib
+from peer_discovery import PORT, PORT
 
 class TaskSplitter:
     def __init__(self):

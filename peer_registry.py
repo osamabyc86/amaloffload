@@ -1,6 +1,7 @@
 import socket
 import time
 from zeroconf import Zeroconf, ServiceBrowser, ServiceInfo
+from peer_discovery import PORT, PORT
 
 class Listener:
     def __init__(self):
@@ -55,7 +56,7 @@ def discover_peers(timeout=2):
 
 if __name__ == "__main__":
     local_ip = socket.gethostbyname(socket.gethostname())
-    port = 7520
+    port = PORT
 
     zc = register_service(local_ip, port, load=0.1)
 

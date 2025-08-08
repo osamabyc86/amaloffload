@@ -8,6 +8,7 @@ import time
 import socket
 from concurrent.futures import ThreadPoolExecutor, as_completed
 import logging
+from peer_discovery import PORT, PORT
 
 class InternetScanner:
     def __init__(self):
@@ -19,7 +20,7 @@ class InternetScanner:
             "208.67.222.0/24", # OpenDNS range
         ]
         
-    def scan_ip_range(self, ip_range: str, port: int = 7520):
+    def scan_ip_range(self, ip_range: str, port: int = PORT):
         """مسح نطاق IP للبحث عن خوادم DTS"""
         import ipaddress
         
@@ -48,7 +49,7 @@ class InternetScanner:
             logging.error(f"خطأ في مسح النطاق {ip_range}: {e}")
             return []
     
-    def check_dts_node(self, ip: str, port: int = 7520) -> str:
+    def check_dts_node(self, ip: str, port: int = PORT) -> str:
         """فحص IP معين للتأكد من وجود خادم DTS مع المشروع"""
         try:
             # فحص صفحة الصحة العامة
@@ -94,7 +95,7 @@ class InternetScanner:
             # البحث في GitHub عن مشاريع DTS
             github_api = "https://api.github.com/search/repositories"
             params = {
-                "q": "distributed task system port:7520",
+                "q": "distributed task system port:PORT",
                 "sort": "updated",
                 "per_page": 10
             }
@@ -122,7 +123,7 @@ class InternetScanner:
             try:
                 # التحقق من صحة IP
                 socket.inet_aton(ip)
-                peer_url = f"http://{ip}:7520/run"
+                peer_url = f"http://{ip}:PORT/run"
                 
                 # فحص سريع
                 if self.check_dts_node(ip):

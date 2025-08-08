@@ -11,6 +11,7 @@ import subprocess
 import argparse
 import time
 from pathlib import Path
+from peer_discovery import PORT, PORT
 
 def check_requirements():
     """فحص المتطلبات والاعتماديات"""

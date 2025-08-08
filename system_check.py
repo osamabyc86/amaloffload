@@ -7,6 +7,7 @@ import requests
 import psutil
 import threading
 from offload_lib import discover_peers
+from peer_discovery import PORT, PORT
 
 def check_local_system():
     """فحص النظام المحلي"""
@@ -23,7 +24,7 @@ def check_server_running():
     """فحص إذا كان الخادم المحلي يعمل"""
     print("🌐 فحص الخادم المحلي...")
     try:
-        response = requests.get("http://localhost:7520/health", timeout=3)
+        response = requests.get("http://localhost:PORT/health", timeout=3)
         if response.status_code == 200:
             print("✅ الخادم المحلي يعمل بشكل صحيح")
             return True

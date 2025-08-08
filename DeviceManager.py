@@ -2,6 +2,7 @@ import subprocess
 import GPUtil
 import psutil
 import logging
+from peer_discovery import PORT, PORT
 
 logging.getLogger().setLevel(logging.CRITICAL)  # صامت
 

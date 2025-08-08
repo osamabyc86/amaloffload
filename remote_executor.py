@@ -12,11 +12,12 @@ from typing import Any
 
 # قائمة الأقران (URLs) المستخرجة من peer_discovery
 from peer_discovery import PEERS
+from peer_discovery import PORT, PORT
 
 # عنوان افتراضي احتياطي (يمكن تغييره بمتغير بيئي REMOTE_SERVER)
 FALLBACK_SERVER = os.getenv(
     "REMOTE_SERVER",
-    "http://89.111.171.92:7520/run"
+    "http://89.111.171.92:PORT/run"
 )
 
 # محاولة استيراد SecurityManager (اختياري)

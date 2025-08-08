@@ -13,7 +13,7 @@ def test_connection():
     
     # 1. فحص الخادم المحلي
     try:
-        response = requests.get("http://localhost:7520/health", timeout=3)
+        response = requests.get("http://localhost:PORT/health", timeout=3)
         if response.status_code == 200:
             print("✅ الخادم المحلي يعمل")
         else:

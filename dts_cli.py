@@ -3,7 +3,7 @@ import click
 from dashboard import app
 from rpc_server import app as rpc_app
 import threading
-
+from peer_discovery import PORT, PORT
 @click.group()
 def cli():
     pass
@@ -21,7 +21,7 @@ def start():
     dashboard_thread.start()
     
     # تشغيل خادم RPC
-    rpc_app.run(host="0.0.0.0", port=7520)
+    rpc_app.run(host="0.0.0.0", port=PORT)
 
 @cli.command()
 from flask import Flask, render_template, request

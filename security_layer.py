@@ -9,6 +9,7 @@ from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 from cryptography.fernet import Fernet
 import os, base64, json
 from typing import Dict
+from peer_discovery import PORT, PORT
 
 
 class SecurityManager:

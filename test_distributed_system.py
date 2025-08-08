@@ -9,6 +9,7 @@ import psutil
 import logging
 from offload_lib import discover_peers, matrix_multiply, prime_calculation, data_processing
 from your_tasks import complex_operation
+from peer_discovery import PORT, PORT
 
 # إعداد السجل
 logging.basicConfig(

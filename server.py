@@ -4,6 +4,7 @@ import json
 from your_tasks import *
 from project_identifier import create_project_endpoint, get_project_info
 import logging
+from peer_discovery import PORT, PORT
 
 app = Flask(__name__)
 CORS(app)
@@ -21,7 +22,7 @@ def multiply():
 
 @app.route('/health', methods=['GET'])
 def health_check():
-    return jsonify({"status": "healthy", "port": 7520})
+    return jsonify({"status": "healthy", "port": PORT})
 
 @app.route('/project_info', methods=['GET'])
 def project_info():
@@ -29,4 +30,4 @@ def project_info():
 
 if __name__ == "__main__":
     # هذا العنوان يسمح بالاستماع على IP خارجي لتلقي الاتصالات من الإنترنت
-    app.run(host="0.0.0.0", port=7520)
+    app.run(host="0.0.0.0", port=PORT)

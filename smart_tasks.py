@@ -1,6 +1,7 @@
 import math
 import numpy as np
 import time
+from peer_discovery import PORT, PORT
 
 def prime_calculation(n: int):
     """ترجع قائمة الأعداد الأوليّة حتى n مع عددها"""

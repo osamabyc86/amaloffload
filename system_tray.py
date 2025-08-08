@@ -9,6 +9,7 @@ import threading
 import requests
 import webbrowser
 from pathlib import Path
+from peer_discovery import PORT, PORT
 
 try:
     import pystray

@@ -10,6 +10,8 @@ import subprocess
 import psutil
 import GPUtil
 from processor_manager import ResourceMonitor
+from peer_discovery import PORT, PORT
+
 
 logging.basicConfig(level=logging.INFO)
 
@@ -246,7 +248,7 @@ class DistributedExecutor:
 # ─────────────── تشغيل رئيسي ───────────────
 if __name__ == "__main__":
     executor = DistributedExecutor("my_secret_key")
-    executor.peer_registry.register_service("node1", 7520, load=0.1)
+    executor.peer_registry.register_service("node1", PORT, load=0.1)
     print("✅ نظام توزيع المهام جاهز...")
 
     def example_task(x):

@@ -16,6 +16,7 @@ from pathlib import Path
 from flask import Flask, jsonify, request
 import json
 from datetime import datetime
+from peer_discovery import PORT, PORT
 
 class BackgroundService:
     def __init__(self):

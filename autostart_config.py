@@ -2,6 +2,7 @@ import json
 import os
 import platform
 from pathlib import Path
+from peer_discovery import PORT, PORT
 
 class AutoStartManager:
     def __init__(self, app_name="DistributedTaskSystem"):

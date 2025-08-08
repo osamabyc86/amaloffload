@@ -7,6 +7,7 @@ import logging
 from functools import wraps
 from processor_manager import should_offload
 from remote_executor import execute_remotely
+from peer_discovery import PORT, PORT
 
 logging.basicConfig(level=logging.INFO)
 

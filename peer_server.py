@@ -6,6 +6,7 @@ import smart_tasks
 import time
 import socket
 import peer_discovery  # إذا كان يستخدم لاحقًا
+from peer_discovery import PORT, PORT
 
 app = Flask(__name__)  # إنشاء التطبيق
 
@@ -33,5 +34,5 @@ def run():
         return jsonify(error=str(e)), 500
 
 if __name__ == "__main__":  # التصحيح هنا
-    app.run(host="0.0.0.0", port=7520)
+    app.run(host="0.0.0.0", port=PORT)
 

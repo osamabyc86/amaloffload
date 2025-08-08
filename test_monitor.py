@@ -7,6 +7,7 @@ import threading
 import psutil
 import signal
 import sys
+from peer_discovery import PORT, PORT
 
 class TestMonitor:
     def __init__(self):

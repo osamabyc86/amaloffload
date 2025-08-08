@@ -1,6 +1,7 @@
 import math
 import numpy as np
 from offload_lib import offload
+from peer_discovery import PORT, PORT
 
 # الدوال الأساسية (محليّة)
 def prime_calculation(n: int):

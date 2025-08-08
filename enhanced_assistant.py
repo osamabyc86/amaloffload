@@ -9,6 +9,7 @@ from PIL import Image
 from io import BytesIO
 import re
 from datetime import datetime
+from peer_discovery import PORT, PORT
 
 class EnhancedNoraAssistant:
     def __init__(self):

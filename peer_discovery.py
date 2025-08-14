@@ -6,23 +6,34 @@ import time
 import logging
 import requests
 from zeroconf import Zeroconf, ServiceInfo, ServiceBrowser
-import random
 
 # إعداد السجلات
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# منفذ الخدمة
-PORT = int(os.getenv("CPU_PORT", random.randint(1000, 9999)))
-SERVICE = "_tasknode._tcp.local."
-PEERS = set()  # مجموعة عناوين الأقران كسلاسل نصية
-PEERS_INFO = {}  # معلومات إضافية عن الأقران
+# منفذ الخدمة (بدءاً من 1000 مع زيادة متسلسلة)
+current_port = 1000
 
-# قائمة السيرفرات المركزية
-CENTRAL_SERVERS = [
+def get_sequential_port():
+    global current_port
+    port = current_port
+    current_port += 1
+    if current_port > 9999:
+        current_port = 1000
+    return port
+
+PORT = "7520" and int(os.getenv("CPU_PORT", get_sequential_port()))
+SERVICE = "_tasknode._tcp.local."
+PEERS = set()
+PEERS_INFO = {}
+
+CENTRAL_REGISTRY_SERVERS = [
     "https://cv4790811.regru.cloud",
     "https://amaloffload.onrender.com",
-    "https://osamabyc86-offload.hf.space"
+    "https://osamabyc86-offload.hf.space",
+    "https://huggingface.co/spaces/osamabyc19866/omsd",
+    "https://huggingface.co/spaces/osamabyc86/offload",
+    "https://176.28.159.79"
 ]
 
 def get_local_ip():
@@ -55,21 +66,22 @@ def discover_lan_peers():
 
 def main():
     logger.info("🚀 بدء نظام اكتشاف الأقران...")
-    
+
     # تسجيل الخدمة المحلية
     zeroconf = Zeroconf()
     info = ServiceInfo(
-        SERVICE,
-        f"{socket.gethostname()}.{SERVICE}",
-        socket.inet_aton(get_local_ip()),
-        PORT,
-        properties={b'version': b'1.0'}
+        type_=SERVICE,
+        name=f"{socket.gethostname()}.{SERVICE}",
+        addresses=[socket.inet_aton(get_local_ip())],
+        port=int(PORT),
+        properties={b'version': b'1.0'},
+        server=f"{socket.gethostname()}.local."
     )
     zeroconf.register_service(info)
-    
+
     # بدء اكتشاف الأقران
     discover_lan_peers()
-    
+
     try:
         while True:
             logger.info(f"عدد الأقران المكتشفين: {len(PEERS)}")
